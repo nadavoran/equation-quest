@@ -328,10 +328,10 @@ export default function GameScreen() {
 
       {/* Difficulty gauge — inline in header saves vertical space */}
 
-      {/* ── Main content — equation + feedback centered ── */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '8px 16px 0', gap: 10, overflowY: 'auto' }}>
+      {/* ── Main content — all together, vertically centered ── */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '8px 16px 12px', gap: 12, overflowY: 'auto' }}>
 
-        {/* Gauge sits at top of content area, compact */}
+        {/* Gauge */}
         <DifficultyGauge difficulty={eq.difficulty} />
 
         {/* Visual blocks — only shown when setting is on */}
@@ -402,9 +402,9 @@ export default function GameScreen() {
           )}
         </AnimatePresence>
 
-        {/* Input area — pushed to bottom via spacer */}
+        {/* Input area */}
         {!isCorrect && (
-          <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, marginTop: 'auto', paddingBottom: 'max(env(safe-area-inset-bottom, 8px), 8px)' }}>
+          <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
             <AnimatePresence>
               {isWrong && (
                 <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
