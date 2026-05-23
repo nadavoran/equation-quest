@@ -329,7 +329,7 @@ export default function GameScreen() {
       {/* Difficulty gauge — inline in header saves vertical space */}
 
       {/* ── Main content — aligned to top ── */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', padding: '12px 16px 12px', gap: 12, overflowY: 'auto' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', padding: '16px 16px 16px', gap: 18, overflowY: 'auto' }}>
 
         {/* Gauge */}
         <DifficultyGauge difficulty={eq.difficulty} />
