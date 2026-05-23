@@ -12,7 +12,7 @@ import DifficultyGauge from '../components/DifficultyGauge'
 import StreakCelebration from '../components/StreakCelebration'
 import ExerciseIntro from '../components/ExerciseIntro'
 import ExerciseComplete from '../components/ExerciseComplete'
-import type { HistoryEntry, Difficulty, OperationType } from '../types'
+import type { HistoryEntry, Difficulty } from '../types'
 
 const EXERCISE_SIZE = 5 // equations per exercise
 
@@ -46,31 +46,21 @@ export default function GameScreen() {
   const [exerciseEntries, setExerciseEntries] = useState<HistoryEntry[]>([])
   const [exerciseQuestionIdx, setExerciseQuestionIdx] = useState(0)
   const exerciseIdRef = useRef(`ex-${Date.now()}`)
-  // Per-exercise overrides (set at intro, reset each exercise)
-  const [exerciseTypes, setExerciseTypes] = useState<OperationType[]>([])
-  const [exerciseDiffs, setExerciseDiffs] = useState<Difficulty[]>([])
 
   const settings = useSettingsStore(s => s.settings)
 
   const nextEquation = useCallback((difficulty: Difficulty) => {
     const state = useGameStore.getState()
-    // Use per-exercise difficulties if set, else fall back to settings
-    const allowedDiffs: Difficulty[] = exerciseDiffs.length > 0
-      ? exerciseDiffs
-      : useSettingsStore.getState().settings.selectedDifficulties
-    // Only adapt within the allowed set — never go outside what user selected
+    // Always read fresh from global settings — single source of truth
+    const currentSettings = useSettingsStore.getState().settings
+    const allowedDiffs: Difficulty[] = currentSettings.selectedDifficulties
+    // Adapt within allowed set only
     const adapted = adaptDifficulty(difficulty, state.consecutiveWrong, state.streak)
-    // Clamp adapted to nearest allowed difficulty if outside allowed set
     const clampedAdapted: Difficulty = allowedDiffs.includes(adapted)
       ? adapted
-      : allowedDiffs[Math.floor(allowedDiffs.length / 2)] // pick middle of allowed
+      : allowedDiffs[Math.floor(allowedDiffs.length / 2)]
     const picked = pickDifficulty(clampedAdapted, allowedDiffs)
-    // Build effective settings with per-exercise types override
-    const baseSettings = useSettingsStore.getState().settings
-    const effectiveSettings = exerciseTypes.length > 0
-      ? { ...baseSettings, selectedTypes: exerciseTypes }
-      : baseSettings
-    const eq = generateEquation(effectiveSettings, picked)
+    const eq = generateEquation(currentSettings, picked, allowedDiffs)
     game.setEquation(eq)
     game.setDifficulty(picked)
     setInputValue('')
@@ -78,17 +68,16 @@ export default function GameScreen() {
     setHintIndex(0)
     game.setShowHint(false)
     setCurrentHints(getHints(eq))
-  }, [exerciseTypes, exerciseDiffs])
+  }, [])
 
-  function startExercise(types: OperationType[], diffs: Difficulty[]) {
+  function startExercise() {
     exerciseIdRef.current = `ex-${Date.now()}`
     setExerciseEntries([])
     setExerciseQuestionIdx(0)
-    setExerciseTypes(types)
-    setExerciseDiffs(diffs)
     setExercisePhase('playing')
-    // Pick starting difficulty from allowed set
-    const startDiff = diffs.includes('easy') ? 'easy' : diffs[0]
+    // Pick starting difficulty from global settings
+    const allowed = useSettingsStore.getState().settings.selectedDifficulties
+    const startDiff = allowed.includes('easy') ? 'easy' : allowed[0]
     nextEquation(startDiff)
   }
 
@@ -232,8 +221,6 @@ export default function GameScreen() {
 
   function handleOneMore() {
     setExerciseNumber(n => n + 1)
-    setExerciseTypes([])   // reset to home settings for next intro
-    setExerciseDiffs([])
     setExercisePhase('intro')
     game.resetGame()
   }
@@ -243,6 +230,8 @@ export default function GameScreen() {
   }
 
   // ── Render exercise overlays first ──
+  const { updateSettings } = useSettingsStore.getState()
+
   if (exercisePhase === 'intro') {
     return <ExerciseIntro
       exerciseNumber={exerciseNumber}
@@ -251,6 +240,8 @@ export default function GameScreen() {
       selectedDifficulties={settings.selectedDifficulties}
       onStart={startExercise}
       onHome={() => navigate('/')}
+      onUpdateTypes={types => updateSettings({ selectedTypes: types })}
+      onUpdateDifficulties={diffs => updateSettings({ selectedDifficulties: diffs })}
     />
   }
 

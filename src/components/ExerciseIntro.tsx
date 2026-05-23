@@ -32,26 +32,27 @@ interface Props {
   exerciseSize: number
   selectedTypes: OperationType[]
   selectedDifficulties: Difficulty[]
-  onStart: (types: OperationType[], difficulties: Difficulty[]) => void
+  onStart: () => void
   onHome: () => void
+  onUpdateTypes: (types: OperationType[]) => void
+  onUpdateDifficulties: (diffs: Difficulty[]) => void
 }
 
-export default function ExerciseIntro({ exerciseNumber, exerciseSize, selectedTypes, selectedDifficulties, onStart, onHome }: Props) {
+export default function ExerciseIntro({ exerciseNumber, exerciseSize, selectedTypes, selectedDifficulties, onStart, onHome, onUpdateTypes, onUpdateDifficulties }: Props) {
   const tagline = EXERCISE_INTROS[(exerciseNumber - 1) % EXERCISE_INTROS.length]
-  // Local copies — modifications only apply to this exercise
-  const [types, setTypes] = useState<OperationType[]>(selectedTypes)
-  const [diffs, setDiffs] = useState<Difficulty[]>(selectedDifficulties)
 
   function toggleType(id: OperationType) {
-    setTypes(t => t.includes(id)
-      ? (t.length > 1 ? t.filter(x => x !== id) : t)
-      : [...t, id])
+    const next = selectedTypes.includes(id)
+      ? (selectedTypes.length > 1 ? selectedTypes.filter(x => x !== id) : selectedTypes)
+      : [...selectedTypes, id]
+    onUpdateTypes(next)
   }
 
   function toggleDiff(id: Difficulty) {
-    setDiffs(d => d.includes(id)
-      ? (d.length > 1 ? d.filter(x => x !== id) : d)
-      : [...d, id])
+    const next = selectedDifficulties.includes(id)
+      ? (selectedDifficulties.length > 1 ? selectedDifficulties.filter(x => x !== id) : selectedDifficulties)
+      : [...selectedDifficulties, id]
+    onUpdateDifficulties(next)
   }
 
   return (
@@ -121,7 +122,7 @@ export default function ExerciseIntro({ exerciseNumber, exerciseSize, selectedTy
         </p>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center' }}>
           {OP_OPTIONS.map(({ id, emoji, label }) => {
-            const active = types.includes(id)
+            const active = selectedTypes.includes(id)
             return (
               <button
                 key={id}
@@ -150,7 +151,7 @@ export default function ExerciseIntro({ exerciseNumber, exerciseSize, selectedTy
         </p>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center' }}>
           {DIFF_OPTIONS.map(({ id, emoji, label }) => {
-            const active = diffs.includes(id)
+            const active = selectedDifficulties.includes(id)
             const color = id === 'easy' ? '#27ae60' : id === 'medium' ? '#e67e22' : id === 'hard' ? '#c0392b' : '#6c5ce7'
             return (
               <button
@@ -180,7 +181,7 @@ export default function ExerciseIntro({ exerciseNumber, exerciseSize, selectedTy
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.45 }}
         whileTap={{ scale: 0.96 }}
-        onClick={() => onStart(types, diffs)}
+        onClick={() => onStart()}
         style={{
           background: 'white', color: '#6c5ce7', border: 'none',
           borderRadius: 14, padding: '12px 44px',
