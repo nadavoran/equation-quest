@@ -1,5 +1,8 @@
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import type { OperationType, Difficulty } from '../types'
+import { useSettingsStore } from '../store'
+import { setMusicEnabled } from '../utils/sounds'
 
 const EXERCISE_INTROS = [
   "Let's warm up those math muscles! 💪",
@@ -39,6 +42,15 @@ interface Props {
 
 export default function ExerciseIntro({ exerciseNumber, exerciseSize, selectedTypes, selectedDifficulties, onStart, onHome, onUpdateTypes, onUpdateDifficulties }: Props) {
   const tagline = EXERCISE_INTROS[(exerciseNumber - 1) % EXERCISE_INTROS.length]
+  const { settings, updateSettings } = useSettingsStore()
+  const [muted, setMuted] = useState(!settings.soundEnabled)
+
+  function toggleMute() {
+    const next = !muted
+    setMuted(next)
+    setMusicEnabled(!next)
+    updateSettings({ soundEnabled: !next })
+  }
 
   function toggleType(id: OperationType) {
     const next = selectedTypes.includes(id)
@@ -81,6 +93,18 @@ export default function ExerciseIntro({ exerciseNumber, exerciseSize, selectedTy
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}
       >🏠</button>
+
+      {/* Mute button top-right */}
+      <button
+        onClick={toggleMute}
+        style={{
+          position: 'absolute', top: 52, right: 16,
+          width: 36, height: 36, borderRadius: '50%',
+          background: muted ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.2)',
+          border: 'none', color: 'white', fontSize: 16, cursor: 'pointer',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}
+      >{muted ? '🔇' : '🔊'}</button>
 
       {/* Exercise badge */}
       <motion.div

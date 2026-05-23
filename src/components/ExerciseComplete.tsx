@@ -1,7 +1,9 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import confetti from 'canvas-confetti'
 import type { HistoryEntry } from '../types'
+import { useSettingsStore } from '../store'
+import { setMusicEnabled } from '../utils/sounds'
 
 interface Props {
   exerciseNumber: number
@@ -11,6 +13,15 @@ interface Props {
 }
 
 export default function ExerciseComplete({ exerciseNumber, entries, onDone, onOneMore }: Props) {
+  const { settings, updateSettings } = useSettingsStore()
+  const [muted, setMuted] = useState(!settings.soundEnabled)
+
+  function toggleMute() {
+    const next = !muted
+    setMuted(next)
+    setMusicEnabled(!next)
+    updateSettings({ soundEnabled: !next })
+  }
   const total    = entries.length
   const solved   = entries.filter(e => !e.skipped).length
   const firstTry = entries.filter(e => e.solvedOnFirstTry).length
@@ -32,6 +43,17 @@ export default function ExerciseComplete({ exerciseNumber, entries, onDone, onOn
       background: 'linear-gradient(160deg, #00b894 0%, #55efc4 100%)',
       padding: 24,
     }}>
+      {/* Mute button top-right */}
+      <button
+        onClick={toggleMute}
+        style={{
+          position: 'absolute', top: 52, right: 16,
+          width: 36, height: 36, borderRadius: '50%',
+          background: muted ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.25)',
+          border: 'none', color: 'white', fontSize: 16, cursor: 'pointer',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}
+      >{muted ? '🔇' : '🔊'}</button>
       {/* Trophy */}
       <motion.div
         initial={{ scale: 0, rotate: -20 }}
