@@ -274,8 +274,8 @@ export default function GameScreen() {
         )}
       </AnimatePresence>
 
-      {/* ── Compact header — stays visible even with keyboard open ── */}
-      <div className="theme-gradient flex-shrink-0" style={{ padding: 'max(env(safe-area-inset-top, 12px), 12px) 12px 8px', display: 'flex', alignItems: 'center', gap: 8 }}>
+      {/* ── Header — 2/3 size of other headers ── */}
+      <div className="theme-gradient flex-shrink-0" style={{ padding: 'max(env(safe-area-inset-top, 36px), 36px) 12px 12px', display: 'flex', alignItems: 'center', gap: 8 }}>
         {/* Back — uses flex+center so identical on all platforms */}
         <button
           onClick={() => navigate('/')}
@@ -328,11 +328,14 @@ export default function GameScreen() {
 
       {/* Difficulty gauge — inline in header saves vertical space */}
 
-      {/* ── Main content — aligned to top ── */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', padding: '16px 16px 16px', gap: 18, overflowY: 'auto' }}>
+      {/* ── Main content — precise spacing per spec ── */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', padding: '16px 16px 16px', overflowY: 'auto' }}>
 
         {/* Gauge */}
         <DifficultyGauge difficulty={eq.difficulty} />
+
+        {/* 48px between gauge and equation */}
+        <div style={{ height: 48 }} />
 
         {/* Visual blocks — only shown when setting is on */}
         {settings.showBlocks && (
@@ -369,6 +372,9 @@ export default function GameScreen() {
           })()}
         </p>
 
+        {/* 20px between equation and input/success */}
+        <div style={{ height: 20 }} />
+
         {/* Success box */}
         <AnimatePresence>
           {isCorrect && (
@@ -402,9 +408,9 @@ export default function GameScreen() {
           )}
         </AnimatePresence>
 
-        {/* Input area */}
+        {/* Input area — 36px between input field and buttons */}
         {!isCorrect && (
-          <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
+          <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 36 }}>
             <AnimatePresence>
               {isWrong && (
                 <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
