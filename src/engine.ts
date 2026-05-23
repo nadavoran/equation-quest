@@ -14,25 +14,28 @@ export function adaptDifficulty(
   return current
 }
 
-/** Pick a difficulty band for the next equation using weighted random. */
-export function pickDifficulty(adapted: Difficulty): Difficulty {
-  // Base weights: easy 40%, medium 35%, hard 25%
-  // But bias heavily towards adapted level
+/** Pick a difficulty constrained to the allowed set, weighted towards adapted. */
+export function pickDifficulty(adapted: Difficulty, allowed: Difficulty[] = ['easy', 'medium', 'hard']): Difficulty {
+  const has = (d: Difficulty) => allowed.includes(d)
+  // If only one difficulty allowed, always return it
+  if (allowed.length === 1) return allowed[0]
+  // Weighted roll biased towards adapted
   const roll = Math.random()
   if (adapted === 'easy') {
-    if (roll < 0.70) return 'easy'
-    if (roll < 0.90) return 'medium'
-    return 'hard'
+    if (roll < 0.70 && has('easy'))   return 'easy'
+    if (roll < 0.90 && has('medium')) return 'medium'
+    if (has('hard')) return 'hard'
+  } else if (adapted === 'medium') {
+    if (roll < 0.35 && has('easy'))   return 'easy'
+    if (roll < 0.75 && has('medium')) return 'medium'
+    if (has('hard')) return 'hard'
+  } else {
+    if (roll < 0.20 && has('easy'))   return 'easy'
+    if (roll < 0.45 && has('medium')) return 'medium'
+    if (has('hard')) return 'hard'
   }
-  if (adapted === 'medium') {
-    if (roll < 0.35) return 'easy'
-    if (roll < 0.75) return 'medium'
-    return 'hard'
-  }
-  // hard
-  if (roll < 0.20) return 'easy'
-  if (roll < 0.45) return 'medium'
-  return 'hard'
+  // Fallback: pick random from allowed
+  return allowed[Math.floor(Math.random() * allowed.length)]
 }
 
 function randInt(min: number, max: number): number {

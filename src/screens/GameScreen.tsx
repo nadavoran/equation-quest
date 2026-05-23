@@ -12,7 +12,7 @@ import DifficultyGauge from '../components/DifficultyGauge'
 import StreakCelebration from '../components/StreakCelebration'
 import ExerciseIntro from '../components/ExerciseIntro'
 import ExerciseComplete from '../components/ExerciseComplete'
-import type { HistoryEntry, Difficulty } from '../types'
+import type { HistoryEntry, Difficulty, OperationType } from '../types'
 
 const EXERCISE_SIZE = 5 // equations per exercise
 
@@ -44,16 +44,28 @@ export default function GameScreen() {
   const [exerciseNumber, setExerciseNumber] = useState(1)
   const [exercisePhase, setExercisePhase] = useState<'intro' | 'playing' | 'complete'>('intro')
   const [exerciseEntries, setExerciseEntries] = useState<HistoryEntry[]>([])
-  const [exerciseQuestionIdx, setExerciseQuestionIdx] = useState(0) // 0..EXERCISE_SIZE-1
+  const [exerciseQuestionIdx, setExerciseQuestionIdx] = useState(0)
   const exerciseIdRef = useRef(`ex-${Date.now()}`)
+  // Per-exercise overrides (set at intro, reset each exercise)
+  const [exerciseTypes, setExerciseTypes] = useState<OperationType[]>([])
+  const [exerciseDiffs, setExerciseDiffs] = useState<Difficulty[]>([])
 
   const settings = useSettingsStore(s => s.settings)
 
   const nextEquation = useCallback((difficulty: Difficulty) => {
     const state = useGameStore.getState()
     const adapted = adaptDifficulty(difficulty, state.consecutiveWrong, state.streak)
-    const picked = pickDifficulty(adapted)
-    const eq = generateEquation(useSettingsStore.getState().settings, picked)
+    // Use per-exercise difficulties if set, else fall back to settings
+    const allowedDiffs: Difficulty[] = exerciseDiffs.length > 0
+      ? exerciseDiffs
+      : useSettingsStore.getState().settings.selectedDifficulties
+    const picked = pickDifficulty(adapted, allowedDiffs)
+    // Build a temp settings with per-exercise types override
+    const baseSettings = useSettingsStore.getState().settings
+    const effectiveSettings = exerciseTypes.length > 0
+      ? { ...baseSettings, selectedTypes: exerciseTypes }
+      : baseSettings
+    const eq = generateEquation(effectiveSettings, picked)
     game.setEquation(eq)
     game.setDifficulty(picked)
     setInputValue('')
@@ -61,14 +73,18 @@ export default function GameScreen() {
     setHintIndex(0)
     game.setShowHint(false)
     setCurrentHints(getHints(eq))
-  }, [])
+  }, [exerciseTypes, exerciseDiffs])
 
-  function startExercise() {
+  function startExercise(types: OperationType[], diffs: Difficulty[]) {
     exerciseIdRef.current = `ex-${Date.now()}`
     setExerciseEntries([])
     setExerciseQuestionIdx(0)
+    setExerciseTypes(types)
+    setExerciseDiffs(diffs)
     setExercisePhase('playing')
-    nextEquation('easy')
+    // Pick starting difficulty from allowed set
+    const startDiff = diffs.includes('easy') ? 'easy' : diffs[0]
+    nextEquation(startDiff)
   }
 
   useEffect(() => {
@@ -210,8 +226,9 @@ export default function GameScreen() {
   }
 
   function handleOneMore() {
-    const next = exerciseNumber + 1
-    setExerciseNumber(next)
+    setExerciseNumber(n => n + 1)
+    setExerciseTypes([])   // reset to home settings for next intro
+    setExerciseDiffs([])
     setExercisePhase('intro')
     game.resetGame()
   }
@@ -226,7 +243,9 @@ export default function GameScreen() {
       exerciseNumber={exerciseNumber}
       exerciseSize={EXERCISE_SIZE}
       selectedTypes={settings.selectedTypes}
+      selectedDifficulties={settings.selectedDifficulties}
       onStart={startExercise}
+      onHome={() => navigate('/')}
     />
   }
 

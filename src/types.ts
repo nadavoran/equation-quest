@@ -1,5 +1,6 @@
 export type OperationType = 'addition' | 'subtraction' | 'multiplication' | 'division' | 'negatives'
 export type Difficulty = 'easy' | 'medium' | 'hard'
+export type DifficultyFilter = 'easy' | 'medium' | 'hard'
 export type ThemeId = 'rainbow' | 'ocean' | 'forest' | 'sunset' | 'space' | 'candy'
 
 export interface Equation {
@@ -45,13 +46,14 @@ export interface Settings {
   kidName: string
   avatar: string
   selectedTypes: OperationType[]
+  selectedDifficulties: Difficulty[]  // which difficulties to include
   numbersPerEquation: number
   maxNumber: number
   simpleFractions: boolean
   funBackground: boolean
   theme: ThemeId
   soundEnabled: boolean
-  showBlocks: boolean   // show visual blocks (off by default)
+  showBlocks: boolean
 }
 
 export interface GameState {

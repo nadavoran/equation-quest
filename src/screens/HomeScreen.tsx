@@ -4,7 +4,14 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useSettingsStore, useStatsStore, useGameStore } from '../store'
 import { formatEquation } from '../engine'
 import DifficultyGauge from '../components/DifficultyGauge'
-import type { OperationType, HistoryEntry } from '../types'
+import HistoryPanel from '../components/HistoryPanel'
+import type { OperationType, Difficulty, HistoryEntry } from '../types'
+
+const DIFF_OPTIONS: { id: Difficulty; emoji: string; label: string; color: string }[] = [
+  { id: 'easy',   emoji: '🌱', label: 'Easy',   color: '#27ae60' },
+  { id: 'medium', emoji: '⚡', label: 'Medium', color: '#e67e22' },
+  { id: 'hard',   emoji: '🔥', label: 'Hard',   color: '#c0392b' },
+]
 
 const TYPE_OPTIONS: { id: OperationType; emoji: string; label: string }[] = [
   { id: 'addition',       emoji: '➕', label: 'Add' },
@@ -78,6 +85,17 @@ export default function HomeScreen() {
   const { settings, updateSettings } = useSettingsStore()
   const { stats, history } = useStatsStore()
   const { setEquation, setDifficulty, resetGame } = useGameStore()
+  const [showHistoryPanel, setShowHistoryPanel] = useState(false)
+
+  function toggleDifficulty(id: Difficulty) {
+    const current = settings.selectedDifficulties
+    if (current.includes(id)) {
+      if (current.length === 1) return
+      updateSettings({ selectedDifficulties: current.filter(d => d !== id) })
+    } else {
+      updateSettings({ selectedDifficulties: [...current, id] })
+    }
+  }
 
   const accuracy = stats.totalSolved > 0
     ? Math.round((stats.firstTryCount / stats.totalSolved) * 100)
@@ -140,30 +158,50 @@ export default function HomeScreen() {
         </div>
       </div>
 
-      {/* Type selector — fixed below stats */}
-      <div className="px-4 pt-3 pb-2 flex-shrink-0">
-        <p className="font-bold text-sm mb-2" style={{ color: '#333' }}>Practice:</p>
-        <div className="flex gap-2 flex-wrap">
-          {TYPE_OPTIONS.map(({ id, emoji, label }) => {
-            const active = settings.selectedTypes.includes(id)
-            return (
-              <motion.button
-                key={id}
-                whileTap={{ scale: 0.93 }}
-                onClick={() => toggleType(id)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full font-semibold text-sm border-2"
-                style={{
-                  borderColor: active ? '#6c5ce7' : '#e0e0e0',
-                  background: active ? '#f0efff' : 'white',
-                  color: active ? '#6c5ce7' : '#666',
-                  transition: 'all 0.15s',
-                }}
-              >
-                <span>{emoji}</span>
-                <span>{label}</span>
-              </motion.button>
-            )
-          })}
+      {/* Type + Difficulty selectors — fixed below stats */}
+      <div className="px-4 pt-3 pb-2 flex-shrink-0" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div>
+          <p className="font-bold text-sm mb-2" style={{ color: '#333' }}>Practice:</p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center' }}>
+            {TYPE_OPTIONS.map(({ id, emoji, label }) => {
+              const active = settings.selectedTypes.includes(id)
+              return (
+                <motion.button key={id} whileTap={{ scale: 0.93 }} onClick={() => toggleType(id)}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 6, padding: '6px 14px',
+                    borderRadius: 20, fontSize: 13, fontWeight: 700, cursor: 'pointer',
+                    border: `2px solid ${active ? '#6c5ce7' : '#e0e0e0'}`,
+                    background: active ? '#f0efff' : 'white',
+                    color: active ? '#6c5ce7' : '#666', transition: 'all 0.15s',
+                  }}
+                >
+                  <span>{emoji}</span><span>{label}</span>
+                </motion.button>
+              )
+            })}
+          </div>
+        </div>
+
+        <div>
+          <p className="font-bold text-sm mb-2" style={{ color: '#333' }}>Difficulty:</p>
+          <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
+            {DIFF_OPTIONS.map(({ id, emoji, label, color }) => {
+              const active = settings.selectedDifficulties.includes(id)
+              return (
+                <motion.button key={id} whileTap={{ scale: 0.93 }} onClick={() => toggleDifficulty(id)}
+                  style={{
+                    flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
+                    gap: 3, padding: '7px 6px', borderRadius: 12, cursor: 'pointer',
+                    border: `2px solid ${active ? color : '#e0e0e0'}`,
+                    background: active ? `${color}15` : 'white',
+                    color: active ? color : '#bbb', fontWeight: 700, fontSize: 12, transition: 'all 0.15s',
+                  }}
+                >
+                  <span style={{ fontSize: 18 }}>{emoji}</span><span>{label}</span>
+                </motion.button>
+              )
+            })}
+          </div>
         </div>
       </div>
 
@@ -171,7 +209,13 @@ export default function HomeScreen() {
       <div style={{ flex: 1, overflowY: 'auto', paddingLeft: 16, paddingRight: 16, paddingBottom: 8 }}>
         {recentHistory.length > 0 ? (
           <div>
-            <p className="font-bold text-sm mb-2" style={{ color: '#333' }}>Recent:</p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+              <p className="font-bold text-sm" style={{ color: '#333', margin: 0 }}>Recent:</p>
+              <button onClick={() => setShowHistoryPanel(true)}
+                style={{ fontSize: 12, fontWeight: 700, color: '#6c5ce7', background: 'none', border: 'none', cursor: 'pointer' }}>
+                See all →
+              </button>
+            </div>
             <div className="space-y-1.5">
               {recentHistory.map(entry => (
                 <HistoryItem key={entry.id} entry={entry} onRetry={handleRetry} />
@@ -198,6 +242,18 @@ export default function HomeScreen() {
           🚀 Start Quest!
         </motion.button>
       </div>
+
+      {/* Full History panel */}
+      <AnimatePresence>
+        {showHistoryPanel && (
+          <>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 40 }}
+              onClick={() => setShowHistoryPanel(false)} />
+            <HistoryPanel onClose={() => setShowHistoryPanel(false)} />
+          </>
+        )}
+      </AnimatePresence>
 
       {/* Bottom nav — always at bottom */}
       <nav className="flex-shrink-0 flex" style={{ borderTop: '1px solid #e0e0e0', background: 'white' }}>

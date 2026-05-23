@@ -1,74 +1,45 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
   <defs>
-    <!-- Main purple gradient background -->
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#6c5ce7"/>
-      <stop offset="60%" stop-color="#8b7cf8"/>
-      <stop offset="100%" stop-color="#fd79a8"/>
+      <stop offset="0%" stop-color="#f8f6ff"/>
+      <stop offset="100%" stop-color="#ede9ff"/>
     </linearGradient>
-    <!-- Gold gradient for stars/accents -->
-    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#fdcb6e"/>
-      <stop offset="100%" stop-color="#f9ca24"/>
-    </linearGradient>
-    <!-- White glow filter -->
-    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="8" result="blur"/>
-      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-    <!-- Soft shadow -->
-    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
-      <feDropShadow dx="0" dy="6" stdDeviation="12" flood-color="rgba(0,0,0,0.25)"/>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="3" stdDeviation="6" flood-color="rgba(108,92,231,0.18)"/>
     </filter>
   </defs>
 
-  <!-- Rounded square background (the OS clips to its own shape, but this looks great on web) -->
+  <!-- Soft white-purple background -->
   <rect width="1024" height="1024" rx="220" ry="220" fill="url(#bg)"/>
 
-  <!-- Subtle inner highlight top-left -->
-  <ellipse cx="320" cy="260" rx="380" ry="260" fill="rgba(255,255,255,0.08)"/>
+  <!-- Subtle inner border -->
+  <rect x="18" y="18" width="988" height="988" rx="208" ry="208" fill="none" stroke="#6c5ce7" stroke-width="8" opacity="0.12"/>
 
-  <!-- ── Equation block group ── -->
-  <!-- Block row 1: 3 purple blocks (representing "3") -->
-  <rect x="172" y="310" width="96" height="96" rx="18" fill="#a29bfe" filter="url(#shadow)"/>
-  <rect x="282" y="310" width="96" height="96" rx="18" fill="#a29bfe" filter="url(#shadow)"/>
-  <rect x="392" y="310" width="96" height="96" rx="18" fill="#a29bfe" filter="url(#shadow)"/>
+  <!-- Equation: 3 + 2 = 5 -->
+  <!-- "3" -->
+  <text x="200" y="470" font-family="-apple-system, system-ui, Helvetica Neue, sans-serif"
+        font-size="320" font-weight="900" fill="#6c5ce7" opacity="0.95"
+        filter="url(#shadow)" text-anchor="middle">3</text>
 
-  <!-- Plus sign -->
-  <text x="530" y="388" font-family="-apple-system, system-ui, sans-serif" font-size="110" font-weight="900" fill="white" opacity="0.9" text-anchor="middle">+</text>
+  <!-- "+" -->
+  <text x="420" y="470" font-family="-apple-system, system-ui, Helvetica Neue, sans-serif"
+        font-size="240" font-weight="700" fill="#a29bfe"
+        text-anchor="middle">+</text>
 
-  <!-- Block row 2: 2 pink blocks (representing "2") -->
-  <rect x="612" y="310" width="96" height="96" rx="18" fill="#fd79a8" filter="url(#shadow)"/>
-  <rect x="722" y="310" width="96" height="96" rx="18" fill="#fd79a8" filter="url(#shadow)"/>
+  <!-- "2" -->
+  <text x="600" y="470" font-family="-apple-system, system-ui, Helvetica Neue, sans-serif"
+        font-size="320" font-weight="900" fill="#6c5ce7" opacity="0.95"
+        filter="url(#shadow)" text-anchor="middle">2</text>
 
-  <!-- Equals sign -->
-  <text x="512" y="536" font-family="-apple-system, system-ui, sans-serif" font-size="90" font-weight="900" fill="rgba(255,255,255,0.85)" text-anchor="middle">=</text>
+  <!-- "=" underline bar -->
+  <rect x="120" y="510" width="784" height="14" rx="7" fill="#6c5ce7" opacity="0.2"/>
 
-  <!-- Answer block group: 5 gold blocks (representing "5") -->
-  <rect x="222" y="572" width="88" height="88" rx="16" fill="url(#gold)" filter="url(#shadow)"/>
-  <rect x="324" y="572" width="88" height="88" rx="16" fill="url(#gold)" filter="url(#shadow)"/>
-  <rect x="426" y="572" width="88" height="88" rx="16" fill="url(#gold)" filter="url(#shadow)"/>
-  <rect x="528" y="572" width="88" height="88" rx="16" fill="url(#gold)" filter="url(#shadow)"/>
-  <rect x="630" y="572" width="88" height="88" rx="16" fill="url(#gold)" filter="url(#shadow)"/>
+  <!-- "5" — gold answer -->
+  <text x="512" y="780" font-family="-apple-system, system-ui, Helvetica Neue, sans-serif"
+        font-size="320" font-weight="900" fill="#f9ca24"
+        filter="url(#shadow)" text-anchor="middle">5</text>
 
-  <!-- Star sparkles (celebration feel) -->
-  <!-- Top right star -->
-  <g transform="translate(790, 190) rotate(15)" filter="url(#glow)">
-    <polygon points="0,-28 6,-10 24,-10 10,2 16,20 0,10 -16,20 -10,2 -24,-10 -6,-10" fill="#fdcb6e" opacity="0.95"/>
-  </g>
-  <!-- Top left small star -->
-  <g transform="translate(210, 220) rotate(-10)" filter="url(#glow)">
-    <polygon points="0,-18 4,-6 16,-6 7,2 10,14 0,7 -10,14 -7,2 -16,-6 -4,-6" fill="white" opacity="0.7"/>
-  </g>
-  <!-- Bottom right tiny star -->
-  <g transform="translate(820, 700) rotate(20)" filter="url(#glow)">
-    <polygon points="0,-14 3,-5 12,-5 5,1 8,10 0,5 -8,10 -5,1 -12,-5 -3,-5" fill="white" opacity="0.6"/>
-  </g>
-  <!-- Bottom left star -->
-  <g transform="translate(190, 730) rotate(-5)" filter="url(#glow)">
-    <polygon points="0,-20 5,-7 18,-7 8,2 11,16 0,8 -11,16 -8,2 -18,-7 -5,-7" fill="#fd79a8" opacity="0.8"/>
-  </g>
-
-  <!-- App name "EQ" monogram at bottom -->
-  <text x="512" y="840" font-family="-apple-system, system-ui, sans-serif" font-size="72" font-weight="900" fill="rgba(255,255,255,0.5)" text-anchor="middle" letter-spacing="8">EQUATIONQUEST</text>
+  <!-- Small "EQ" monogram bottom right — subtle -->
+  <text x="890" y="980" font-family="-apple-system, system-ui, sans-serif"
+        font-size="52" font-weight="900" fill="#6c5ce7" opacity="0.18" text-anchor="end">EQ</text>
 </svg>

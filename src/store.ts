@@ -8,6 +8,7 @@ const defaultSettings: Settings = {
   kidName: '',
   avatar: '🦊',
   selectedTypes: ['addition'],
+  selectedDifficulties: ['easy', 'medium', 'hard'],
   numbersPerEquation: 2,
   maxNumber: 100,
   simpleFractions: false,

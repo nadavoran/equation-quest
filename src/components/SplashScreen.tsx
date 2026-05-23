@@ -9,14 +9,10 @@ export default function SplashScreen({ onDone }: Props) {
   const [phase, setPhase] = useState<'logo' | 'title' | 'tagline' | 'done'>('logo')
 
   useEffect(() => {
-    // Logo bounces in → 0.6s
-    const t1 = setTimeout(() => setPhase('title'),   700)
-    // Title slides in → 1.0s
-    const t2 = setTimeout(() => setPhase('tagline'), 1200)
-    // Tagline fades in → 1.6s, then whole thing fades out
-    const t3 = setTimeout(() => setPhase('done'),    2600)
-    // Tell parent we're done
-    const t4 = setTimeout(onDone, 3100)
+    const t1 = setTimeout(() => setPhase('title'),   500)
+    const t2 = setTimeout(() => setPhase('tagline'), 900)
+    const t3 = setTimeout(() => setPhase('done'),    2200)
+    const t4 = setTimeout(onDone, 2700)
     return () => [t1, t2, t3, t4].forEach(clearTimeout)
   }, [])
 
@@ -32,8 +28,8 @@ export default function SplashScreen({ onDone }: Props) {
             position: 'fixed', inset: 0, zIndex: 9999,
             display: 'flex', flexDirection: 'column',
             alignItems: 'center', justifyContent: 'center',
-            gap: 16,
-            background: 'linear-gradient(160deg, #6c5ce7 0%, #a29bfe 50%, #fd79a8 100%)',
+            gap: 12,
+            background: 'linear-gradient(160deg, #6c5ce7 0%, #8b7cf8 60%, #a29bfe 100%)',
           }}
         >
           {/* Animated background blobs */}
@@ -60,21 +56,27 @@ export default function SplashScreen({ onDone }: Props) {
             }}
           />
 
-          {/* Logo / icon */}
+          {/* Logo — matches icon: white bg with equation */}
           <motion.div
-            initial={{ scale: 0, rotate: -20 }}
-            animate={{ scale: 1, rotate: 0 }}
-            transition={{ type: 'spring', stiffness: 280, damping: 18, delay: 0.1 }}
+            initial={{ scale: 0.7, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: 'spring', stiffness: 220, damping: 20, delay: 0.05 }}
             style={{
-              width: 100, height: 100,
-              borderRadius: 28,
+              width: 110, height: 110,
+              borderRadius: 30,
               background: 'white',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 56,
-              boxShadow: '0 12px 40px rgba(0,0,0,0.2)',
+              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
+              gap: 2,
             }}
           >
-            🧮
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+              <span style={{ fontSize: 28, fontWeight: 900, color: '#6c5ce7' }}>3</span>
+              <span style={{ fontSize: 20, fontWeight: 700, color: '#a29bfe' }}>+</span>
+              <span style={{ fontSize: 28, fontWeight: 900, color: '#6c5ce7' }}>2</span>
+            </div>
+            <div style={{ width: 60, height: 3, background: '#e0e0e0', borderRadius: 2 }} />
+            <div style={{ fontSize: 30, fontWeight: 900, color: '#f9ca24' }}>5</div>
           </motion.div>
 
           {/* App name */}
