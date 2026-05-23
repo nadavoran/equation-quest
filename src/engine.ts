@@ -57,15 +57,47 @@ export function pickDifficulty(
 
 // ── Enforce operation constraints per difficulty ───────────────────────────────
 // Returns the effective difficulty for a given operation
-// (bumps up if the operation can't be easy/medium)
 function effectiveDifficulty(op: OperationType, difficulty: Difficulty): Difficulty {
   if (op === 'multiplication' || op === 'division') {
+    // ×÷ can't be easy — medium minimum
     if (difficulty === 'easy') return 'medium'
   }
   if (op === 'negatives') {
-    if (difficulty === 'easy' || difficulty === 'medium') return 'hard'
+    // Negatives with small numbers (1–10) = medium
+    // Negatives with larger numbers = hard
+    // Negatives with both negative = expert
+    // So minimum is medium, never easy
+    if (difficulty === 'easy') return 'medium'
   }
   return difficulty
+}
+
+// ── Classify actual difficulty after generation ───────────────────────────────
+// Determines the true difficulty label based on what was actually generated
+export function classifyDifficulty(op: OperationType, numbers: number[]): Difficulty {
+  const maxAbs = Math.max(...numbers.map(n => Math.abs(n)))
+  const hasNeg = numbers.some(n => n < 0)
+  const bothNeg = numbers.every(n => n < 0)
+
+  if (op === 'negatives') {
+    if (bothNeg || maxAbs > 50) return 'expert'
+    if (maxAbs > 10) return 'hard'
+    return 'medium' // negatives are never easy
+  }
+
+  if (op === 'multiplication' || op === 'division') {
+    if (maxAbs > 100) return 'expert'
+    if (maxAbs > 50) return 'hard'
+    if (maxAbs > 10) return 'hard'
+    return 'medium' // ×÷ are never easy
+  }
+
+  // addition / subtraction
+  if (hasNeg) return maxAbs > 20 ? 'hard' : 'medium'
+  if (maxAbs > 100) return 'expert'
+  if (maxAbs > 50) return 'hard'
+  if (maxAbs > 10) return 'medium'
+  return 'easy'
 }
 
 function randInt(min: number, max: number): number {
@@ -167,7 +199,9 @@ export function generateEquation(settings: Settings, difficulty: Difficulty): Eq
   const types = selectedTypes.length > 0 ? selectedTypes : ['addition' as OperationType]
   const operation = types[Math.floor(Math.random() * types.length)]
   const { numbers, answer, displayAnswer } = generateNumbers(operation, difficulty, settings)
-  return { numbers, operation, correctAnswer: answer, difficulty, displayAnswer }
+  // Classify the actual difficulty based on what was generated
+  const actualDifficulty = classifyDifficulty(operation, numbers)
+  return { numbers, operation, correctAnswer: answer, difficulty: actualDifficulty, displayAnswer }
 }
 
 export function formatEquation(eq: Equation): string {
