@@ -60,7 +60,7 @@ export default function ExerciseIntro({ exerciseNumber, exerciseSize, selectedTy
       display: 'flex', flexDirection: 'column',
       alignItems: 'center', justifyContent: 'center',
       background: 'linear-gradient(160deg, #6c5ce7 0%, #a29bfe 60%, #fd79a8 100%)',
-      padding: '24px 20px', overflowY: 'auto',
+      padding: '16px 20px', overflow: 'hidden',
     }}>
       {/* Subtle blob */}
       <div style={{
@@ -87,7 +87,7 @@ export default function ExerciseIntro({ exerciseNumber, exerciseSize, selectedTy
         initial={{ scale: 0.7, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: 'spring', stiffness: 260, damping: 22 }}
-        style={{ background: 'rgba(255,255,255,0.2)', borderRadius: 20, padding: '6px 18px', marginBottom: 12 }}
+        style={{ background: 'rgba(255,255,255,0.2)', borderRadius: 20, padding: '5px 16px', marginBottom: 8 }}
       >
         <span style={{ color: 'white', fontSize: 13, fontWeight: 800, letterSpacing: 1, textTransform: 'uppercase' }}>
           Exercise {exerciseNumber}
@@ -99,7 +99,7 @@ export default function ExerciseIntro({ exerciseNumber, exerciseSize, selectedTy
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        style={{ color: 'white', fontSize: 36, fontWeight: 900, margin: 0, textAlign: 'center', lineHeight: 1.15 }}
+        style={{ color: 'white', fontSize: 30, fontWeight: 900, margin: 0, textAlign: 'center', lineHeight: 1.15 }}
       >
         Ready for <span style={{ color: '#fdcb6e' }}>{exerciseSize} equations</span>?
       </motion.h1>
@@ -108,14 +108,14 @@ export default function ExerciseIntro({ exerciseNumber, exerciseSize, selectedTy
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
-        style={{ color: 'rgba(255,255,255,0.8)', fontSize: 15, fontWeight: 600, margin: '10px 0 20px', textAlign: 'center' }}
+        style={{ color: 'rgba(255,255,255,0.8)', fontSize: 14, fontWeight: 600, margin: '6px 0 14px', textAlign: 'center' }}
       >
         {tagline}
       </motion.p>
 
       {/* Practice selector */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}
-        style={{ width: '100%', maxWidth: 340, marginBottom: 12 }}>
+        style={{ width: '100%', maxWidth: 340, marginBottom: 8 }}>
         <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 12, fontWeight: 700, margin: '0 0 8px', textAlign: 'center', textTransform: 'uppercase', letterSpacing: 0.8 }}>
           Practice
         </p>
@@ -144,7 +144,7 @@ export default function ExerciseIntro({ exerciseNumber, exerciseSize, selectedTy
 
       {/* Difficulty selector */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}
-        style={{ width: '100%', maxWidth: 340, marginBottom: 24 }}>
+        style={{ width: '100%', maxWidth: 340, marginBottom: 16 }}>
         <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 12, fontWeight: 700, margin: '0 0 8px', textAlign: 'center', textTransform: 'uppercase', letterSpacing: 0.8 }}>
           Difficulty
         </p>
@@ -183,9 +183,9 @@ export default function ExerciseIntro({ exerciseNumber, exerciseSize, selectedTy
         onClick={() => onStart(types, diffs)}
         style={{
           background: 'white', color: '#6c5ce7', border: 'none',
-          borderRadius: 16, padding: '15px 52px',
-          fontSize: 19, fontWeight: 900, cursor: 'pointer',
-          boxShadow: '0 6px 24px rgba(0,0,0,0.18)',
+          borderRadius: 14, padding: '12px 44px',
+          fontSize: 17, fontWeight: 900, cursor: 'pointer',
+          boxShadow: '0 4px 18px rgba(0,0,0,0.16)',
         }}
       >
         Let's go! 🚀
