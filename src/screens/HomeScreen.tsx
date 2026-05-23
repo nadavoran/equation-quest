@@ -7,6 +7,85 @@ import DifficultyGauge from '../components/DifficultyGauge'
 import HistoryPanel from '../components/HistoryPanel'
 import type { OperationType, Difficulty, HistoryEntry } from '../types'
 
+// ── Group entries by exerciseId ───────────────────────────────────────────────
+interface ExerciseGroup { exerciseId: string; label: string; entries: HistoryEntry[] }
+
+function groupByExercise(entries: HistoryEntry[]): ExerciseGroup[] {
+  const order: string[] = []
+  const map = new Map<string, HistoryEntry[]>()
+  entries.forEach(e => {
+    const id = e.exerciseId ?? 'legacy'
+    if (!map.has(id)) { map.set(id, []); order.push(id) }
+    map.get(id)!.push(e)
+  })
+  const total = order.length
+  return order.map((id, i) => ({ exerciseId: id, label: `Exercise ${total - i}`, entries: map.get(id)! }))
+}
+
+// ── Single entry row ──────────────────────────────────────────────────────────
+function EntryRow({ entry, onRetry }: { entry: HistoryEntry; onRetry: () => void }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <div
+      style={{ background: 'white', border: '1.5px solid #e8e8e8', borderRadius: 12, padding: '8px 10px', cursor: entry.attempts.length > 0 ? 'pointer' : 'default' }}
+      onClick={() => entry.attempts.length > 0 && setOpen(o => !o)}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <span style={{ fontWeight: 700, fontSize: 12, color: '#333', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {formatEquation(entry.equation).replace(' = ?', ` = ${entry.equation.displayAnswer ?? entry.equation.correctAnswer}`)}
+        </span>
+        <DifficultyGauge difficulty={entry.equation.difficulty} size="sm" />
+        {entry.skipped ? <span style={{ fontSize: 10, color: '#999' }}>⏭</span>
+          : entry.solvedOnFirstTry ? <span style={{ fontSize: 10, color: '#00b894' }}>✓</span>
+          : <span style={{ fontSize: 10, color: '#fdcb6e' }}>{entry.attempts.length}×</span>}
+        <button onClick={e => { e.stopPropagation(); onRetry() }}
+          style={{ fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 8, background: '#f0efff', color: '#6c5ce7', border: '1px solid #a29bfe', cursor: 'pointer' }}>↻</button>
+      </div>
+      <AnimatePresence>
+        {open && entry.attempts.length > 0 && (
+          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} style={{ overflow: 'hidden' }}>
+            <div style={{ borderTop: '1px dashed #e0e0e0', marginTop: 6, paddingTop: 6 }}>
+              {entry.attempts.map((a, i) => (
+                <div key={i} style={{ fontSize: 11, fontWeight: 600, color: a.correct ? '#00b894' : '#e17055' }}>
+                  {a.correct ? '✓' : '✗'} Tried: {a.value}{a.correct ? ' — correct!' : ''}
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
+// ── Exercise group row ────────────────────────────────────────────────────────
+function ExerciseGroupRow({ group, defaultOpen, onRetry }: { group: ExerciseGroup; defaultOpen: boolean; onRetry: (e: HistoryEntry) => void }) {
+  const [open, setOpen] = useState(defaultOpen)
+  const solved   = group.entries.filter(e => !e.skipped).length
+  const firstTry = group.entries.filter(e => e.solvedOnFirstTry).length
+  const acc      = solved > 0 ? Math.round((firstTry / solved) * 100) : 0
+  return (
+    <div>
+      <button onClick={() => setOpen(o => !o)} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 10px', borderRadius: 10, border: 'none', cursor: 'pointer', background: '#f0efff', marginBottom: open ? 5 : 0 }}>
+        <span style={{ fontWeight: 800, fontSize: 12, color: '#6c5ce7' }}>{group.label}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ fontSize: 11, color: '#666', fontWeight: 600 }}>{solved}/{group.entries.length} · {acc}% ✓</span>
+          <span style={{ color: '#a29bfe', fontSize: 10 }}>{open ? '▲' : '▼'}</span>
+        </div>
+      </button>
+      <AnimatePresence>
+        {open && (
+          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} style={{ overflow: 'hidden' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, paddingBottom: 4 }}>
+              {group.entries.map(entry => <EntryRow key={entry.id} entry={entry} onRetry={() => onRetry(entry)} />)}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
 const DIFF_OPTIONS: { id: Difficulty; emoji: string; label: string; color: string }[] = [
   { id: 'easy',   emoji: '🌱', label: 'Easy',   color: '#27ae60' },
   { id: 'medium', emoji: '⚡', label: 'Medium', color: '#e67e22' },
@@ -22,64 +101,6 @@ const TYPE_OPTIONS: { id: OperationType; emoji: string; label: string }[] = [
   { id: 'negatives',      emoji: '±',  label: 'Negatives' },
 ]
 
-function HistoryItem({ entry, onRetry }: { entry: HistoryEntry; onRetry: (e: HistoryEntry) => void }) {
-  const [expanded, setExpanded] = useState(false)
-  const hasAttempts = entry.attempts.length > 0
-
-  return (
-    <div
-      className="card"
-      style={{ padding: '8px 12px', cursor: hasAttempts ? 'pointer' : 'default' }}
-      onClick={() => hasAttempts && setExpanded(e => !e)}
-    >
-      <div className="flex items-center justify-between gap-2">
-        <span className="text-sm font-bold" style={{ color: '#333', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          {formatEquation(entry.equation).replace(' = ?', ` = ${entry.equation.displayAnswer ?? entry.equation.correctAnswer}`)}
-        </span>
-        <div className="flex items-center gap-1.5 flex-shrink-0">
-          <DifficultyGauge difficulty={entry.equation.difficulty} size="sm" />
-          {entry.skipped ? (
-            <span className="text-xs font-semibold" style={{ color: '#999' }}>⏭</span>
-          ) : entry.solvedOnFirstTry ? (
-            <span className="text-xs font-bold" style={{ color: '#00b894' }}>✓</span>
-          ) : (
-            <span className="text-xs font-semibold" style={{ color: '#fdcb6e' }}>{entry.attempts.length}×</span>
-          )}
-          <button
-            onClick={e => { e.stopPropagation(); onRetry(entry) }}
-            style={{
-              fontSize: 10, fontWeight: 700, padding: '2px 7px',
-              borderRadius: 10, background: '#f0efff', color: '#6c5ce7',
-              border: '1px solid #a29bfe', cursor: 'pointer',
-            }}
-          >↻</button>
-          {hasAttempts && (
-            <span style={{ color: '#bbb', fontSize: 10 }}>{expanded ? '▲' : '▼'}</span>
-          )}
-        </div>
-      </div>
-
-      <AnimatePresence>
-        {expanded && hasAttempts && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            style={{ overflow: 'hidden' }}
-          >
-            <div className="mt-2 pt-2 space-y-0.5" style={{ borderTop: '1px dashed #e0e0e0' }}>
-              {entry.attempts.map((attempt, i) => (
-                <div key={i} className="text-xs font-semibold" style={{ color: attempt.correct ? '#00b894' : '#e17055' }}>
-                  {attempt.correct ? '✓' : '✗'} Tried: {attempt.value}{attempt.correct ? ' — correct!' : ''}
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  )
-}
 
 export default function HomeScreen() {
   const navigate = useNavigate()
@@ -119,7 +140,8 @@ export default function HomeScreen() {
     navigate('/game')
   }
 
-  const recentHistory = history.slice(0, 20)
+  const recentHistory = history.slice(0, 30)
+  const exerciseGroups = groupByExercise(recentHistory)
 
   return (
     <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: '#f8f9fa', overflow: 'hidden' }}>
@@ -208,7 +230,7 @@ export default function HomeScreen() {
 
       {/* Scrollable history */}
       <div style={{ flex: 1, overflowY: 'auto', paddingLeft: 16, paddingRight: 16, paddingBottom: 8 }}>
-        {recentHistory.length > 0 ? (
+        {exerciseGroups.length > 0 ? (
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
               <p className="font-bold text-sm" style={{ color: '#333', margin: 0 }}>Recent:</p>
@@ -217,9 +239,9 @@ export default function HomeScreen() {
                 See all →
               </button>
             </div>
-            <div className="space-y-1.5">
-              {recentHistory.map(entry => (
-                <HistoryItem key={entry.id} entry={entry} onRetry={handleRetry} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {exerciseGroups.map((group, i) => (
+                <ExerciseGroupRow key={group.exerciseId} group={group} defaultOpen={i === 0} onRetry={handleRetry} />
               ))}
             </div>
           </div>
