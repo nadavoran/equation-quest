@@ -6,24 +6,23 @@ interface Props {
 }
 
 export default function SplashScreen({ onDone }: Props) {
-  const [phase, setPhase] = useState<'logo' | 'title' | 'tagline' | 'done'>('logo')
+  const [done, setDone] = useState(false)
 
   useEffect(() => {
-    const t1 = setTimeout(() => setPhase('title'),   500)
-    const t2 = setTimeout(() => setPhase('tagline'), 900)
-    const t3 = setTimeout(() => setPhase('done'),    2200)
-    const t4 = setTimeout(onDone, 2700)
-    return () => [t1, t2, t3, t4].forEach(clearTimeout)
+    const t1 = setTimeout(() => setDone(true), 2000)
+    const t2 = setTimeout(onDone, 2500)
+    return () => [t1, t2].forEach(clearTimeout)
   }, [])
 
   return (
     <AnimatePresence>
-      {phase !== 'done' && (
+      {!done && (
         <motion.div
           key="splash"
-          initial={{ opacity: 1 }}
-          exit={{ opacity: 0, scale: 1.04 }}
-          transition={{ duration: 0.5, ease: 'easeInOut' }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.4, ease: 'easeInOut' }}
           style={{
             position: 'fixed', inset: 0, zIndex: 9999,
             display: 'flex', flexDirection: 'column',
@@ -86,62 +85,35 @@ export default function SplashScreen({ onDone }: Props) {
             </div>
           </motion.div>
 
-          {/* App name */}
-          <AnimatePresence>
-            {(phase === 'title' || phase === 'tagline') && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-                style={{ textAlign: 'center' }}
-              >
-                <h1 style={{
-                  color: 'white',
-                  fontSize: 36,
-                  fontWeight: 900,
-                  letterSpacing: -0.5,
-                  margin: 0,
-                  textShadow: '0 2px 12px rgba(0,0,0,0.2)',
-                  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-                }}>
-                  Equation<span style={{ color: '#fdcb6e' }}>Quest</span>
-                </h1>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {/* App name — shown immediately with the icon */}
+          <div style={{ textAlign: 'center' }}>
+            <h1 style={{
+              color: 'white', fontSize: 36, fontWeight: 900,
+              letterSpacing: -0.5, margin: 0,
+              textShadow: '0 2px 12px rgba(0,0,0,0.15)',
+              fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+            }}>
+              Equation<span style={{ color: '#fdcb6e' }}>Quest</span>
+            </h1>
+          </div>
 
           {/* Tagline */}
-          <AnimatePresence>
-            {phase === 'tagline' && (
-              <motion.p
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
-                style={{
-                  color: 'rgba(255,255,255,0.9)',
-                  fontSize: 16,
-                  fontWeight: 600,
-                  margin: 0,
-                  textShadow: '0 1px 4px rgba(0,0,0,0.15)',
-                  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-                }}
-              >
-                Math adventures for curious kids 🌟
-              </motion.p>
-            )}
-          </AnimatePresence>
+          <p style={{
+            color: 'rgba(255,255,255,0.85)', fontSize: 15, fontWeight: 600,
+            margin: 0, textShadow: '0 1px 4px rgba(0,0,0,0.12)',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+          }}>
+            Math adventures for curious kids 🌟
+          </p>
 
           {/* Loading dots */}
-          <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+          <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
             {[0, 1, 2].map(i => (
               <motion.div
                 key={i}
-                animate={{ opacity: [0.3, 1, 0.3], y: [0, -6, 0] }}
-                transition={{ repeat: Infinity, duration: 1.2, delay: i * 0.2 }}
-                style={{
-                  width: 8, height: 8, borderRadius: '50%',
-                  background: 'rgba(255,255,255,0.7)',
-                }}
+                animate={{ opacity: [0.3, 1, 0.3] }}
+                transition={{ repeat: Infinity, duration: 1.4, delay: i * 0.22 }}
+                style={{ width: 7, height: 7, borderRadius: '50%', background: 'rgba(255,255,255,0.65)' }}
               />
             ))}
           </div>
