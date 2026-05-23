@@ -195,19 +195,20 @@ function MultiplicationAnim({ eq, bs }: { eq: Equation; bs: number }) {
   )
 }
 
-// ── DIVISION: dividend splits into [divisor] equal groups ────────────────────
+// ── DIVISION: show [result] groups, each containing [divisor] blocks ─────────
+// e.g. 6 ÷ 3 = 2 → show 2 groups of 3 blocks each
 function DivisionAnim({ eq, bs }: { eq: Equation; bs: number }) {
   const [dividend, divisor] = eq.numbers
-  const groupCount  = Math.min(divisor, 6)       // number of groups = divisor
-  const perGroup    = Math.min(eq.correctAnswer, 10) // blocks per group = result
+  const groupCount = Math.min(eq.correctAnswer, 8)  // number of groups = RESULT
+  const perGroup   = Math.min(divisor, 10)           // blocks per group = DIVISOR
   const colors = FALLBACK_COLORS
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
       <p style={{ fontSize: 12, fontWeight: 700, color: '#888', margin: 0 }}>
-        {dividend} ÷ {divisor}: splitting into {groupCount} equal groups
+        {dividend} ÷ {divisor} = {eq.correctAnswer} groups of {divisor}
       </p>
-      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center' }}>
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
         {Array.from({ length: groupCount }).map((_, g) => (
           <motion.div
             key={g}
@@ -216,7 +217,7 @@ function DivisionAnim({ eq, bs }: { eq: Equation; bs: number }) {
             transition={{ delay: g * 0.15, type: 'spring', stiffness: 320 }}
             style={{
               display: 'flex', flexDirection: 'column-reverse', gap: 2,
-              padding: 5, borderRadius: 10,
+              padding: 6, borderRadius: 10,
               border: `2px solid ${colors[g % colors.length]}`,
               background: `${colors[g % colors.length]}18`,
             }}
@@ -225,7 +226,7 @@ function DivisionAnim({ eq, bs }: { eq: Equation; bs: number }) {
               <Block key={r} size={bs - 2} color={colors[g % colors.length]} />
             ))}
             <span style={{ fontSize: 10, fontWeight: 800, color: colors[g % colors.length], textAlign: 'center' }}>
-              {eq.correctAnswer}
+              {divisor}
             </span>
           </motion.div>
         ))}
@@ -236,7 +237,7 @@ function DivisionAnim({ eq, bs }: { eq: Equation; bs: number }) {
         transition={{ delay: groupCount * 0.15 + 0.4 }}
         style={{ fontWeight: 900, fontSize: 18, color: '#6c5ce7' }}
       >
-        = {eq.correctAnswer} each
+        {eq.correctAnswer} equal groups!
       </motion.span>
     </div>
   )

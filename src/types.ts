@@ -22,6 +22,15 @@ export interface HistoryEntry {
   skipped: boolean
   solvedOnFirstTry: boolean
   timestamp: number
+  exerciseId: string  // which exercise this belongs to
+}
+
+export interface Exercise {
+  id: string
+  number: number      // Exercise 1, 2, 3…
+  size: number        // how many equations in this exercise
+  startedAt: number
+  completedAt?: number
 }
 
 export interface Stats {
@@ -42,6 +51,7 @@ export interface Settings {
   funBackground: boolean
   theme: ThemeId
   soundEnabled: boolean
+  showBlocks: boolean   // show visual blocks (off by default)
 }
 
 export interface GameState {

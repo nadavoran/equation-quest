@@ -6,6 +6,28 @@ import { formatEquation } from '../engine'
 import DifficultyGauge from './DifficultyGauge'
 import type { HistoryEntry, Difficulty } from '../types'
 
+// ── Group entries by exerciseId ───────────────────────────────────────────────
+interface ExerciseGroup {
+  exerciseId: string
+  entries: HistoryEntry[]
+  label: string
+}
+
+function groupByExercise(entries: HistoryEntry[]): ExerciseGroup[] {
+  const map = new Map<string, HistoryEntry[]>()
+  entries.forEach(e => {
+    const id = e.exerciseId ?? 'legacy'
+    if (!map.has(id)) map.set(id, [])
+    map.get(id)!.push(e)
+  })
+  let exNum = map.size
+  return Array.from(map.entries()).map(([id, items]) => ({
+    exerciseId: id,
+    entries: items,
+    label: `Exercise ${exNum--}`,
+  }))
+}
+
 type Filter = 'all' | Difficulty | 'errors' | 'skipped'
 
 const FILTERS: { id: Filter; label: string }[] = [
@@ -120,81 +142,95 @@ export default function HistoryPanel({ onClose }: Props) {
         })}
       </div>
 
-      {/* History list */}
-      <div className="flex-1 overflow-y-auto px-3 py-2 space-y-2">
+      {/* History list — grouped by exercise */}
+      <div className="flex-1 overflow-y-auto px-3 py-2 space-y-3">
         {filtered.length === 0 && (
           <p className="text-center text-sm mt-8" style={{ color: '#999' }}>No entries yet!</p>
         )}
-        {filtered.map(entry => (
-          <div
-            key={entry.id}
-            className="rounded-2xl p-3 cursor-pointer"
-            style={{
-              background: 'white',
-              border: '1.5px solid #e8e8e8',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
-            }}
-            onClick={() => setExpanded(expanded === entry.id ? null : entry.id)}
-          >
-            <div className="flex items-center justify-between gap-2">
-              <span className="font-bold text-sm" style={{ color: '#333', flex: 1, minWidth: 0 }}>
-                {formatEquation(entry.equation).replace(' = ?', ` = ${entry.equation.displayAnswer ?? entry.equation.correctAnswer}`)}
-              </span>
-              <div style={{ flexShrink: 0 }}>
-                <DifficultyGauge difficulty={entry.equation.difficulty} size="sm" />
-              </div>
-            </div>
+        {groupByExercise(filtered).map(group => {
+          const solved   = group.entries.filter(e => !e.skipped).length
+          const firstTry = group.entries.filter(e => e.solvedOnFirstTry).length
+          const acc      = solved > 0 ? Math.round((firstTry / solved) * 100) : 0
+          const isGroupOpen = expanded === group.exerciseId || expanded === null
 
-            <div className="flex items-center gap-2 mt-1.5">
-              {entry.skipped ? (
-                <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: '#f1f3f5', color: '#666' }}>⏭ Skipped</span>
-              ) : entry.solvedOnFirstTry ? (
-                <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: 'rgba(0,184,148,0.12)', color: '#00b894' }}>✓ 1st try</span>
-              ) : (
-                <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: 'rgba(253,203,110,0.2)', color: '#b8860b' }}>{entry.attempts.length} tries</span>
-              )}
-
-              {/* Retry button — wired up! */}
+          return (
+            <div key={group.exerciseId}>
+              {/* Exercise group header — collapsible */}
               <button
-                onClick={e => { e.stopPropagation(); handleRetry(entry) }}
-                className="ml-auto text-xs font-bold px-2.5 py-1 rounded-full"
+                onClick={() => setExpanded(expanded === group.exerciseId ? null : group.exerciseId)}
                 style={{
-                  background: '#f0efff',
-                  color: '#6c5ce7',
-                  border: '1.5px solid #a29bfe',
-                  cursor: 'pointer',
+                  width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  padding: '6px 10px', borderRadius: 10, border: 'none', cursor: 'pointer',
+                  background: '#f0efff', marginBottom: 6,
                 }}
               >
-                ↻ Retry
+                <span style={{ fontWeight: 800, fontSize: 13, color: '#6c5ce7' }}>{group.label}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ fontSize: 11, color: '#666', fontWeight: 600 }}>
+                    {solved}/{group.entries.length} · {acc}% 1st try
+                  </span>
+                  <span style={{ color: '#a29bfe', fontSize: 12 }}>{isGroupOpen ? '▲' : '▼'}</span>
+                </div>
               </button>
-            </div>
 
-            {/* Expanded attempt details */}
-            <AnimatePresence>
-              {expanded === entry.id && entry.attempts.length > 0 && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  style={{ overflow: 'hidden' }}
-                >
-                  <div className="mt-2 pt-2 space-y-1" style={{ borderTop: '1px dashed #e0e0e0' }}>
-                    {entry.attempts.map((attempt, i) => (
-                      <div
-                        key={i}
-                        className="text-xs font-semibold"
-                        style={{ color: attempt.correct ? '#00b894' : '#e17055' }}
-                      >
-                        {attempt.correct ? '✓' : '✗'} Tried: {attempt.value}
-                        {attempt.correct && ' — correct!'}
-                      </div>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        ))}
+              <AnimatePresence>
+                {isGroupOpen && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    style={{ overflow: 'hidden' }}
+                  >
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                      {group.entries.map(entry => (
+                        <div
+                          key={entry.id}
+                          style={{ background: 'white', border: '1.5px solid #e8e8e8', borderRadius: 16, padding: '10px 12px', cursor: 'pointer', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}
+                          onClick={() => setExpanded(expanded === entry.id ? group.exerciseId : entry.id)}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+                            <span style={{ fontWeight: 700, fontSize: 13, color: '#333', flex: 1, minWidth: 0 }}>
+                              {formatEquation(entry.equation).replace(' = ?', ` = ${entry.equation.displayAnswer ?? entry.equation.correctAnswer}`)}
+                            </span>
+                            <DifficultyGauge difficulty={entry.equation.difficulty} size="sm" />
+                          </div>
+
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6 }}>
+                            {entry.skipped ? (
+                              <span style={{ fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 10, background: '#f1f3f5', color: '#666' }}>⏭ Skipped</span>
+                            ) : entry.solvedOnFirstTry ? (
+                              <span style={{ fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 10, background: 'rgba(0,184,148,0.12)', color: '#00b894' }}>✓ 1st try</span>
+                            ) : (
+                              <span style={{ fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 10, background: 'rgba(253,203,110,0.2)', color: '#b8860b' }}>{entry.attempts.length} tries</span>
+                            )}
+                            <button
+                              onClick={e => { e.stopPropagation(); handleRetry(entry) }}
+                              style={{ marginLeft: 'auto', fontSize: 11, fontWeight: 700, padding: '2px 10px', borderRadius: 10, background: '#f0efff', color: '#6c5ce7', border: '1.5px solid #a29bfe', cursor: 'pointer' }}
+                            >↻ Retry</button>
+                          </div>
+
+                          <AnimatePresence>
+                            {expanded === entry.id && entry.attempts.length > 0 && (
+                              <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} style={{ overflow: 'hidden' }}>
+                                <div style={{ borderTop: '1px dashed #e0e0e0', marginTop: 8, paddingTop: 8 }}>
+                                  {entry.attempts.map((attempt, i) => (
+                                    <div key={i} style={{ fontSize: 11, fontWeight: 700, color: attempt.correct ? '#00b894' : '#e17055' }}>
+                                      {attempt.correct ? '✓' : '✗'} Tried: {attempt.value}{attempt.correct ? ' — correct!' : ''}
+                                    </div>
+                                  ))}
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </div>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          )
+        })}
       </div>
     </motion.div>
   )

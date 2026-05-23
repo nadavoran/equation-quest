@@ -185,6 +185,18 @@ export default function SettingsScreen() {
             <Toggle on={local.simpleFractions} onToggle={() => setLocal(s => ({ ...s, simpleFractions: !s.simpleFractions }))} />
           </div>
 
+          {/* Show visual blocks */}
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-semibold text-sm" style={{ color: '#333' }}>Visual blocks 🧱</p>
+              <p className="text-xs" style={{ color: '#999' }}>Show Numberblocks animations</p>
+            </div>
+            <Toggle
+              on={local.showBlocks}
+              onToggle={() => setLocal(s => ({ ...s, showBlocks: !s.showBlocks }))}
+            />
+          </div>
+
           {/* Sound effects */}
           <div className="flex items-center justify-between">
             <div>

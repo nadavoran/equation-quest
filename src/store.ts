@@ -14,6 +14,7 @@ const defaultSettings: Settings = {
   funBackground: true,
   theme: 'rainbow',
   soundEnabled: true,
+  showBlocks: false,
 }
 
 const defaultStats: Stats = {
