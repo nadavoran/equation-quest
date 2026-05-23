@@ -194,14 +194,44 @@ function generateNumbers(
   return { numbers: nums, answer: nums.reduce((a, b) => a + b, 0) }
 }
 
-export function generateEquation(settings: Settings, difficulty: Difficulty): Equation {
+export function generateEquation(settings: Settings, difficulty: Difficulty, allowedDifficulties?: Difficulty[]): Equation {
   const { selectedTypes } = settings
-  const types = selectedTypes.length > 0 ? selectedTypes : ['addition' as OperationType]
-  const operation = types[Math.floor(Math.random() * types.length)]
-  const { numbers, answer, displayAnswer } = generateNumbers(operation, difficulty, settings)
-  // Classify the actual difficulty based on what was generated
-  const actualDifficulty = classifyDifficulty(operation, numbers)
-  return { numbers, operation, correctAnswer: answer, difficulty: actualDifficulty, displayAnswer }
+  const allowed = allowedDifficulties ?? settings.selectedDifficulties ?? ['easy', 'medium', 'hard', 'expert']
+  
+  // Filter out operations that can never produce an equation within allowed difficulties
+  // e.g. if only 'easy' is allowed, exclude multiplication/division/negatives
+  const canBeEasy = (op: OperationType) => op === 'addition' || op === 'subtraction'
+  const canBeMedium = (op: OperationType) => op !== 'negatives'
+  
+  const maxAllowed: Difficulty = allowed.includes('expert') ? 'expert'
+    : allowed.includes('hard') ? 'hard'
+    : allowed.includes('medium') ? 'medium'
+    : 'easy'
+
+  const types = (selectedTypes.length > 0 ? selectedTypes : ['addition' as OperationType]).filter(op => {
+    if (maxAllowed === 'easy') return canBeEasy(op)
+    if (maxAllowed === 'medium') return canBeMedium(op)
+    return true
+  })
+  const safeTypes = types.length > 0 ? types : ['addition' as OperationType]
+  
+  // Try generating up to 10 times to get an equation within allowed difficulties
+  for (let attempt = 0; attempt < 10; attempt++) {
+    const operation = safeTypes[Math.floor(Math.random() * safeTypes.length)]
+    const { numbers, answer, displayAnswer } = generateNumbers(operation, difficulty, settings)
+    const actualDifficulty = classifyDifficulty(operation, numbers)
+    // Accept if actual difficulty is within allowed set
+    if (allowed.includes(actualDifficulty)) {
+      return { numbers, operation, correctAnswer: answer, difficulty: actualDifficulty, displayAnswer }
+    }
+  }
+  
+  // Fallback: force a simple addition within the easy range
+  const fallbackMax = maxAllowed === 'easy' ? 10 : maxAllowed === 'medium' ? 50 : 100
+  const a = randInt(1, Math.floor(fallbackMax / 2))
+  const b = randInt(1, Math.floor(fallbackMax / 2))
+  const actualDifficulty = classifyDifficulty('addition', [a, b])
+  return { numbers: [a, b], operation: 'addition', correctAnswer: a + b, difficulty: actualDifficulty }
 }
 
 export function formatEquation(eq: Equation): string {
