@@ -4,42 +4,23 @@
       <stop offset="0%" stop-color="#f8f6ff"/>
       <stop offset="100%" stop-color="#ede9ff"/>
     </linearGradient>
-    <filter id="shadow">
-      <feDropShadow dx="0" dy="3" stdDeviation="6" flood-color="rgba(108,92,231,0.18)"/>
-    </filter>
   </defs>
 
   <!-- Soft white-purple background -->
   <rect width="1024" height="1024" rx="220" ry="220" fill="url(#bg)"/>
 
-  <!-- Subtle inner border -->
-  <rect x="18" y="18" width="988" height="988" rx="208" ry="208" fill="none" stroke="#6c5ce7" stroke-width="8" opacity="0.12"/>
+  <!-- Subtle border -->
+  <rect x="18" y="18" width="988" height="988" rx="208" ry="208" fill="none" stroke="#2d2d3a" stroke-width="6" opacity="0.08"/>
 
-  <!-- Equation: 3 + 2 = 5 -->
-  <!-- "3" -->
-  <text x="200" y="470" font-family="-apple-system, system-ui, Helvetica Neue, sans-serif"
-        font-size="320" font-weight="900" fill="#6c5ce7" opacity="0.95"
-        filter="url(#shadow)" text-anchor="middle">3</text>
+  <!-- "5" left -->
+  <text x="300" y="590" font-family="-apple-system, system-ui, Helvetica Neue, sans-serif"
+        font-size="420" font-weight="900" fill="#2d2d3a" text-anchor="middle">5</text>
 
-  <!-- "+" -->
-  <text x="420" y="470" font-family="-apple-system, system-ui, Helvetica Neue, sans-serif"
-        font-size="240" font-weight="700" fill="#a29bfe"
-        text-anchor="middle">+</text>
+  <!-- "+" operator — slightly lighter -->
+  <text x="512" y="480" font-family="-apple-system, system-ui, Helvetica Neue, sans-serif"
+        font-size="200" font-weight="700" fill="#2d2d3a" opacity="0.35" text-anchor="middle">+</text>
 
-  <!-- "2" -->
-  <text x="600" y="470" font-family="-apple-system, system-ui, Helvetica Neue, sans-serif"
-        font-size="320" font-weight="900" fill="#6c5ce7" opacity="0.95"
-        filter="url(#shadow)" text-anchor="middle">2</text>
-
-  <!-- "=" underline bar -->
-  <rect x="120" y="510" width="784" height="14" rx="7" fill="#6c5ce7" opacity="0.2"/>
-
-  <!-- "5" — gold answer -->
-  <text x="512" y="780" font-family="-apple-system, system-ui, Helvetica Neue, sans-serif"
-        font-size="320" font-weight="900" fill="#f9ca24"
-        filter="url(#shadow)" text-anchor="middle">5</text>
-
-  <!-- Small "EQ" monogram bottom right — subtle -->
-  <text x="890" y="980" font-family="-apple-system, system-ui, sans-serif"
-        font-size="52" font-weight="900" fill="#6c5ce7" opacity="0.18" text-anchor="end">EQ</text>
+  <!-- "3" right -->
+  <text x="724" y="590" font-family="-apple-system, system-ui, Helvetica Neue, sans-serif"
+        font-size="420" font-weight="900" fill="#2d2d3a" text-anchor="middle">3</text>
 </svg>

@@ -56,27 +56,34 @@ export default function SplashScreen({ onDone }: Props) {
             }}
           />
 
-          {/* Logo — matches icon: white bg with equation */}
+          {/* Logo — matches icon: white bg, 5 + 3 = 8 */}
           <motion.div
             initial={{ scale: 0.7, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ type: 'spring', stiffness: 220, damping: 20, delay: 0.05 }}
             style={{
-              width: 110, height: 110,
-              borderRadius: 30,
+              width: 120, height: 120,
+              borderRadius: 32,
               background: 'white',
               display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
-              gap: 2,
+              boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+              gap: 3,
+              padding: '0 12px',
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-              <span style={{ fontSize: 28, fontWeight: 900, color: '#6c5ce7' }}>3</span>
-              <span style={{ fontSize: 20, fontWeight: 700, color: '#a29bfe' }}>+</span>
-              <span style={{ fontSize: 28, fontWeight: 900, color: '#6c5ce7' }}>2</span>
+            {/* 5 + 3 */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+              <span style={{ fontSize: 36, fontWeight: 900, color: '#2d2d3a', lineHeight: 1 }}>5</span>
+              <span style={{ fontSize: 24, fontWeight: 700, color: '#2d2d3a', opacity: 0.35, lineHeight: 1 }}>+</span>
+              <span style={{ fontSize: 36, fontWeight: 900, color: '#2d2d3a', lineHeight: 1 }}>3</span>
             </div>
-            <div style={{ width: 60, height: 3, background: '#e0e0e0', borderRadius: 2 }} />
-            <div style={{ fontSize: 30, fontWeight: 900, color: '#f9ca24' }}>5</div>
+            {/* = divider */}
+            <div style={{ width: 64, height: 2.5, background: '#e0e0e0', borderRadius: 2 }} />
+            {/* = 8 answer */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+              <span style={{ fontSize: 13, fontWeight: 700, color: '#2d2d3a', opacity: 0.4 }}>=</span>
+              <span style={{ fontSize: 36, fontWeight: 900, color: '#6c5ce7', lineHeight: 1 }}>8</span>
+            </div>
           </motion.div>
 
           {/* App name */}
