@@ -190,14 +190,14 @@ export default function HomeScreen() {
               return (
                 <motion.button key={id} whileTap={{ scale: 0.93 }} onClick={() => toggleDifficulty(id)}
                   style={{
-                    flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
-                    gap: 3, padding: '7px 6px', borderRadius: 12, cursor: 'pointer',
+                    flex: 1, display: 'flex', flexDirection: 'row', alignItems: 'center',
+                    justifyContent: 'center', gap: 4, padding: '5px 4px', borderRadius: 10, cursor: 'pointer',
                     border: `2px solid ${active ? color : '#e0e0e0'}`,
                     background: active ? `${color}15` : 'white',
-                    color: active ? color : '#bbb', fontWeight: 700, fontSize: 12, transition: 'all 0.15s',
+                    color: active ? color : '#bbb', fontWeight: 700, fontSize: 11, transition: 'all 0.15s',
                   }}
                 >
-                  <span style={{ fontSize: 18 }}>{emoji}</span><span>{label}</span>
+                  <span style={{ fontSize: 14 }}>{emoji}</span><span>{label}</span>
                 </motion.button>
               )
             })}

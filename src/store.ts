@@ -7,7 +7,7 @@ import type { Settings, Stats, HistoryEntry, GameState, Difficulty, Equation, At
 const defaultSettings: Settings = {
   kidName: '',
   avatar: '🦊',
-  selectedTypes: ['addition'],
+  selectedTypes: ['addition', 'subtraction', 'multiplication', 'division', 'negatives'],
   selectedDifficulties: ['easy', 'medium', 'hard'],
   numbersPerEquation: 2,
   maxNumber: 100,

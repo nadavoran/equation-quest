@@ -156,16 +156,16 @@ export default function ExerciseIntro({ exerciseNumber, exerciseSize, selectedTy
                 key={id}
                 onClick={() => toggleDiff(id)}
                 style={{
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
-                  padding: '10px 16px', borderRadius: 14, cursor: 'pointer',
+                  display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 6,
+                  padding: '8px 16px', borderRadius: 12, cursor: 'pointer',
                   border: active ? '2.5px solid white' : '2px solid rgba(255,255,255,0.25)',
                   background: active ? 'white' : 'rgba(255,255,255,0.1)',
                   color: active ? color : 'rgba(255,255,255,0.7)',
-                  fontSize: 12, fontWeight: 800, transition: 'all 0.15s',
-                  minWidth: 72,
+                  fontSize: 13, fontWeight: 800, transition: 'all 0.15s',
+                  minWidth: 80,
                 }}
               >
-                <span style={{ fontSize: 20 }}>{emoji}</span>
+                <span style={{ fontSize: 16 }}>{emoji}</span>
                 <span>{label}</span>
               </button>
             )
