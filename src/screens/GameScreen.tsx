@@ -275,7 +275,7 @@ export default function GameScreen() {
       </AnimatePresence>
 
       {/* ── Compact header — stays visible even with keyboard open ── */}
-      <div className="theme-gradient flex-shrink-0" style={{ padding: '44px 12px 8px', display: 'flex', alignItems: 'center', gap: 8 }}>
+      <div className="theme-gradient flex-shrink-0" style={{ padding: 'max(env(safe-area-inset-top, 12px), 12px) 12px 8px', display: 'flex', alignItems: 'center', gap: 8 }}>
         {/* Back — uses flex+center so identical on all platforms */}
         <button
           onClick={() => navigate('/')}
@@ -326,13 +326,13 @@ export default function GameScreen() {
         >{muted ? '🔇' : '🔊'}</motion.button>
       </div>
 
-      {/* Difficulty gauge — compact */}
-      <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 4, flexShrink: 0 }}>
-        <DifficultyGauge difficulty={eq.difficulty} />
-      </div>
+      {/* Difficulty gauge — inline in header saves vertical space */}
 
-      {/* ── Scrollable main content ── */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 16px', gap: 10, overflowY: 'auto' }}>
+      {/* ── Main content — equation + feedback centered ── */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '8px 16px 0', gap: 10, overflowY: 'auto' }}>
+
+        {/* Gauge sits at top of content area, compact */}
+        <DifficultyGauge difficulty={eq.difficulty} />
 
         {/* Visual blocks — only shown when setting is on */}
         {settings.showBlocks && (
@@ -402,9 +402,9 @@ export default function GameScreen() {
           )}
         </AnimatePresence>
 
-        {/* Input area */}
+        {/* Input area — pushed to bottom via spacer */}
         {!isCorrect && (
-          <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
+          <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, marginTop: 'auto', paddingBottom: 'max(env(safe-area-inset-bottom, 8px), 8px)' }}>
             <AnimatePresence>
               {isWrong && (
                 <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}

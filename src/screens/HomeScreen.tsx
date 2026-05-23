@@ -164,20 +164,22 @@ export default function HomeScreen() {
         </div>
       </div>
 
-      {/* Stats Card — fixed below header */}
-      <div className="px-4 flex-shrink-0" style={{ marginTop: -16 }}>
-        <div className="card grid grid-cols-2 gap-2">
-          {[
-            { value: stats.totalSolved, label: 'Total Solved' },
-            { value: `${accuracy}%`,    label: 'Accuracy' },
-            { value: `🔥 ${stats.bestStreak}`, label: 'Best Streak' },
-            { value: stats.todayCount,  label: 'Today' },
-          ].map(({ value, label }) => (
-            <div key={label} className="rounded-xl p-2 text-center" style={{ background: '#f0efff' }}>
-              <div className="text-xl font-black" style={{ color: '#6c5ce7' }}>{value}</div>
-              <div className="text-xs mt-0.5" style={{ color: '#999' }}>{label}</div>
-            </div>
-          ))}
+      {/* Stats Card — compact single row */}
+      <div className="px-4 flex-shrink-0" style={{ marginTop: -14 }}>
+        <div className="card" style={{ padding: '8px 12px' }}>
+          <div style={{ display: 'flex' }}>
+            {[
+              { value: stats.totalSolved,       label: 'Solved' },
+              { value: `${accuracy}%`,           label: 'Accuracy' },
+              { value: `🔥${stats.bestStreak}`,  label: 'Best' },
+              { value: stats.todayCount,         label: 'Today' },
+            ].map(({ value, label }, i) => (
+              <div key={label} style={{ flex: 1, textAlign: 'center', borderRight: i < 3 ? '1px solid #e0e0e0' : 'none', padding: '2px 4px' }}>
+                <div style={{ fontSize: 16, fontWeight: 900, color: '#6c5ce7', lineHeight: 1.2 }}>{value}</div>
+                <div style={{ fontSize: 10, color: '#999', marginTop: 1 }}>{label}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
