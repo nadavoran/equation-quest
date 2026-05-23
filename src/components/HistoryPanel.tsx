@@ -31,14 +31,16 @@ function groupByExercise(entries: HistoryEntry[]): ExerciseGroup[] {
 }
 
 type Filter = 'all' | Difficulty | 'errors' | 'skipped'
+// Difficulty is now 'easy' | 'medium' | 'hard' | 'expert'
 
 const FILTERS: { id: Filter; label: string }[] = [
   { id: 'all',     label: 'All' },
-  { id: 'easy',    label: 'Easy' },
-  { id: 'medium',  label: 'Medium' },
-  { id: 'hard',    label: 'Hard' },
+  { id: 'easy',    label: '🌱 Easy' },
+  { id: 'medium',  label: '⚡ Med' },
+  { id: 'hard',    label: '🔥 Hard' },
+  { id: 'expert',  label: '💀 Expert' },
   { id: 'errors',  label: '❌ Errors' },
-  { id: 'skipped', label: '⏭ Skipped' },
+  { id: 'skipped', label: '⏭ Skip' },
 ]
 
 // ── Single history entry row ──────────────────────────────────────────────────

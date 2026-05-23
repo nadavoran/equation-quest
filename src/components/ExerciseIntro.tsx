@@ -24,6 +24,7 @@ const DIFF_OPTIONS: { id: Difficulty; emoji: string; label: string }[] = [
   { id: 'easy',   emoji: '🌱', label: 'Easy' },
   { id: 'medium', emoji: '⚡', label: 'Medium' },
   { id: 'hard',   emoji: '🔥', label: 'Hard' },
+  { id: 'expert', emoji: '💀', label: 'Expert' },
 ]
 
 interface Props {

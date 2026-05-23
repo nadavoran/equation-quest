@@ -6,8 +6,6 @@ interface Props {
   size?: 'sm' | 'md'
 }
 
-// Three distinct segmented bars — much more readable than gradient bars
-// Each segment has a unique shape + icon so colorblind users can also tell them apart
 export default function DifficultyGauge({ difficulty, size = 'md' }: Props) {
   const isSm = size === 'sm'
 
@@ -21,6 +19,7 @@ export default function DifficultyGauge({ difficulty, size = 'md' }: Props) {
     { id: 'easy',   color: '#27ae60', dimColor: '#c8e6c9', icon: '🌱', label: 'Easy'   },
     { id: 'medium', color: '#e67e22', dimColor: '#ffe0b2', icon: '⚡', label: 'Medium' },
     { id: 'hard',   color: '#c0392b', dimColor: '#ffcdd2', icon: '🔥', label: 'Hard'   },
+    { id: 'expert', color: '#6c5ce7', dimColor: '#d9d4fb', icon: '💀', label: 'Expert' },
   ]
 
   const baseH   = isSm ? 7  : 11

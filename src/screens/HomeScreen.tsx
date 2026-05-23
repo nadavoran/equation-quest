@@ -11,6 +11,7 @@ const DIFF_OPTIONS: { id: Difficulty; emoji: string; label: string; color: strin
   { id: 'easy',   emoji: '🌱', label: 'Easy',   color: '#27ae60' },
   { id: 'medium', emoji: '⚡', label: 'Medium', color: '#e67e22' },
   { id: 'hard',   emoji: '🔥', label: 'Hard',   color: '#c0392b' },
+  { id: 'expert', emoji: '💀', label: 'Expert', color: '#6c5ce7' },
 ]
 
 const TYPE_OPTIONS: { id: OperationType; emoji: string; label: string }[] = [

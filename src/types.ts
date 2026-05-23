@@ -1,6 +1,5 @@
 export type OperationType = 'addition' | 'subtraction' | 'multiplication' | 'division' | 'negatives'
-export type Difficulty = 'easy' | 'medium' | 'hard'
-export type DifficultyFilter = 'easy' | 'medium' | 'hard'
+export type Difficulty = 'easy' | 'medium' | 'hard' | 'expert'
 export type ThemeId = 'rainbow' | 'ocean' | 'forest' | 'sunset' | 'space' | 'candy'
 
 export interface Equation {

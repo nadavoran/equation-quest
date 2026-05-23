@@ -54,6 +54,7 @@ function getMilestone(streak: number): MilestoneConfig | null {
 
 export default function StreakCelebration({ streak, onDone }: Props) {
   const milestone = getMilestone(streak)
+  // expert streaks get extra celebration
 
   useEffect(() => {
     if (!milestone) return

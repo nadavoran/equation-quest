@@ -54,13 +54,18 @@ export default function GameScreen() {
 
   const nextEquation = useCallback((difficulty: Difficulty) => {
     const state = useGameStore.getState()
-    const adapted = adaptDifficulty(difficulty, state.consecutiveWrong, state.streak)
     // Use per-exercise difficulties if set, else fall back to settings
     const allowedDiffs: Difficulty[] = exerciseDiffs.length > 0
       ? exerciseDiffs
       : useSettingsStore.getState().settings.selectedDifficulties
-    const picked = pickDifficulty(adapted, allowedDiffs)
-    // Build a temp settings with per-exercise types override
+    // Only adapt within the allowed set — never go outside what user selected
+    const adapted = adaptDifficulty(difficulty, state.consecutiveWrong, state.streak)
+    // Clamp adapted to nearest allowed difficulty if outside allowed set
+    const clampedAdapted: Difficulty = allowedDiffs.includes(adapted)
+      ? adapted
+      : allowedDiffs[Math.floor(allowedDiffs.length / 2)] // pick middle of allowed
+    const picked = pickDifficulty(clampedAdapted, allowedDiffs)
+    // Build effective settings with per-exercise types override
     const baseSettings = useSettingsStore.getState().settings
     const effectiveSettings = exerciseTypes.length > 0
       ? { ...baseSettings, selectedTypes: exerciseTypes }

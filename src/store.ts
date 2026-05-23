@@ -8,7 +8,7 @@ const defaultSettings: Settings = {
   kidName: '',
   avatar: '🦊',
   selectedTypes: ['addition', 'subtraction', 'multiplication', 'division', 'negatives'],
-  selectedDifficulties: ['easy', 'medium', 'hard'],
+  selectedDifficulties: ['easy', 'medium', 'hard', 'expert'],
   numbersPerEquation: 2,
   maxNumber: 100,
   simpleFractions: false,
