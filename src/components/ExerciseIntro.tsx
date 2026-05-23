@@ -148,26 +148,26 @@ export default function ExerciseIntro({ exerciseNumber, exerciseSize, selectedTy
         <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 12, fontWeight: 700, margin: '0 0 8px', textAlign: 'center', textTransform: 'uppercase', letterSpacing: 0.8 }}>
           Difficulty
         </p>
-        <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center' }}>
           {DIFF_OPTIONS.map(({ id, emoji, label }) => {
             const active = diffs.includes(id)
-            const color = id === 'easy' ? '#27ae60' : id === 'medium' ? '#e67e22' : '#c0392b'
+            const color = id === 'easy' ? '#27ae60' : id === 'medium' ? '#e67e22' : id === 'hard' ? '#c0392b' : '#6c5ce7'
             return (
               <button
                 key={id}
                 onClick={() => toggleDiff(id)}
                 style={{
-                  display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 6,
-                  padding: '8px 16px', borderRadius: 12, cursor: 'pointer',
-                  border: active ? '2.5px solid white' : '2px solid rgba(255,255,255,0.25)',
-                  background: active ? 'white' : 'rgba(255,255,255,0.1)',
-                  color: active ? color : 'rgba(255,255,255,0.7)',
+                  display: 'flex', alignItems: 'center', gap: 5,
+                  padding: '7px 14px', borderRadius: 20, cursor: 'pointer',
+                  border: active ? '2px solid white' : '2px solid rgba(255,255,255,0.3)',
+                  background: active ? 'white' : 'rgba(255,255,255,0.12)',
+                  color: active ? color : 'rgba(255,255,255,0.8)',
                   fontSize: 13, fontWeight: 800, transition: 'all 0.15s',
-                  minWidth: 80,
+                  whiteSpace: 'nowrap', boxSizing: 'border-box',
                 }}
               >
-                <span style={{ fontSize: 16 }}>{emoji}</span>
-                <span>{label}</span>
+                <span style={{ fontSize: 14, lineHeight: 1 }}>{emoji}</span>
+                <span style={{ lineHeight: 1 }}>{label}</span>
               </button>
             )
           })}
